@@ -1,0 +1,85 @@
+---
+
+services:
+  kratos-migrate:
+    image: docker.io/oryd/kratos:v25.4.0
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    volumes:
+      - ./volumes/config/kratos:/etc/config/kratos:ro
+      - kratos-sqlite:/var/lib/sqlite
+    networks:
+      - ory
+    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+    restart: on-failure
+
+  kratos:
+    image: docker.io/oryd/kratos:v25.4.0
+    depends_on:
+      - kratos-migrate
+    environment:
+      # - DSN=memory # Use in-memory database (good for temporary debugging)
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+      ## Always use explicit secrets in dev to prevent session loss after restart
+      - SECRETS_COOKIE=_________________VERY_LONG_SECRET_STRING________________________
+      - SECRETS_CIPHER=_____32_CHAR_SECRET_STRING______
+    volumes:
+      - ./volumes/config/kratos:/etc/config/kratos:ro
+      - kratos-sqlite:/var/lib/sqlite
+    networks:
+      - ory
+    ports:
+      - 127.0.0.1:4433:4433 # Public
+      - 127.0.0.1:4434:4434 # Admin
+    command: serve -c /etc/config/kratos/kratos.yml --dev
+
+  hydra-create-sqlite:
+    image: busybox
+    volumes:
+      - hydra-sqlite:/mnt/sqlite
+    command: "chmod -R 777 /mnt/sqlite"
+
+  hydra-migrate:
+    image: docker.io/oryd/hydra:v25.4.0
+    depends_on:
+      - hydra-create-sqlite
+    environment:
+      - DSN=sqlite:///mnt/sqlite/db.sqlite?_fk=true&mode=rwc
+    volumes:
+      - ./volumes/config/hydra:/etc/config/hydra:ro
+      - hydra-sqlite:/mnt/sqlite
+    command: migrate -c /etc/config/hydra/hydra.yml sql up -e --yes
+    networks:
+      - ory
+    restart: on-failure
+
+  hydra:
+    depends_on:
+      - hydra-migrate
+    image: docker.io/oryd/hydra:v25.4.0
+    environment:
+      # - DSN=memory # Use in-memory database (good for temporary debugging)
+      - DSN=sqlite:///mnt/sqlite/db.sqlite?_fk=true&mode=rwc
+      - OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=public,pairwise
+      - OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT=_________________VERY_LONG_SECRET_STRING________________________
+      - SECRETS_SYSTEM=_______________YOUR_HYDRA_ADMIN_API_BEARER_TOKEN________________
+      - URLS_SELF_ISSUER=http://127.0.0.1:4444
+      - URLS_LOGIN=http://127.0.0.1:4000/login
+      - URLS_CONSENT=http://127.0.0.1:4000/consent
+      - URLS_LOGOUT=http://127.0.0.1:4000/logout
+    volumes:
+      - hydra-sqlite:/mnt/sqlite
+    networks:
+      - ory
+    ports:
+      - 127.0.0.1:4444:4444 # Public
+      - 127.0.0.1:4445:4445 # Admin
+    command: serve all --dev
+
+networks:
+  ory:
+    driver: bridge
+
+volumes:
+  kratos-sqlite:
+  hydra-sqlite:

@@ -1,0 +1,57 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <div class="mx-auto max-w-sm">
+    <div class="text-center">
+      <.header>
+        Register for an account
+        <:subtitle>
+          Already registered?
+          <.link navigate={~p"/users/log-in"} class="font-semibold text-brand hover:underline">
+            Log in
+          </.link>
+          to your account now.
+        </:subtitle>
+      </.header>
+    </div>
+
+    <section class="mt-4 mb-8">
+      <div :for={error_message <- @error_messages} role="alert" class="my-4 alert alert-error">
+        <b>Error</b> {error_message}
+      </div>
+    </section>
+
+    <.form for={@form} action={@form_action_url} csrf_token={false}>
+      <.input
+        field={@form[:"traits.email"]}
+        type="email"
+        label="Email"
+        autocomplete="email"
+        required
+        phx-mounted={JS.focus()}
+      />
+
+      <.input
+        field={@form[:password]}
+        type="password"
+        label="Password"
+        required
+      />
+
+      <%!-- Kratos hidden fields --%>
+      <.input
+        field={@form[:csrf_token]}
+        type="hidden"
+        value={@kratos_csrf_token}
+      />
+
+      <.input
+        field={@form[:method]}
+        type="hidden"
+        value="password"
+      />
+
+      <.button phx-disable-with="Creating account..." class="mt-8 btn btn-primary w-full">
+        Create an account
+      </.button>
+    </.form>
+  </div>
+</Layouts.app>

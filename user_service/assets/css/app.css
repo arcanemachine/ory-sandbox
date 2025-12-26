@@ -1,0 +1,70 @@
+/* See the Tailwind configuration guide for advanced usage
+   https://tailwindcss.com/docs/configuration */
+
+@import "tailwindcss" source(none);
+@source "../css";
+@source "../js";
+@source "../../lib/user_service_web";
+
+/* A Tailwind plugin that makes "hero-#{ICON}" classes available.
+   The heroicons installation itself is managed by your mix.exs */
+@plugin "../vendor/heroicons";
+
+/* daisyUI Tailwind Plugin. You can update this file by fetching the latest version with:
+   curl -sLO https://github.com/saadeghi/daisyui/releases/latest/download/daisyui.js
+   Make sure to look at the daisyUI changelog: https://daisyui.com/docs/changelog/ */
+@plugin "../vendor/daisyui" {
+  themes: false;
+}
+
+/* daisyUI theme plugin. You can update this file by fetching the latest version with:
+  curl -sLO https://github.com/saadeghi/daisyui/releases/latest/download/daisyui-theme.js
+  We ship with two themes, a light one inspired on Phoenix colors and a dark one inspired
+  on Elixir colors. Build your own at: https://daisyui.com/theme-generator/ */
+@plugin "../vendor/daisyui-theme" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: #F8FCFA;
+  --color-base-200: oklch(91.8373% 0.004618 165.011094);
+  --color-base-300: oklch(84.9248% 0.004271 165.011094);
+  --color-base-content: oklch(19.75% 0.000993 165.011094);
+  --color-primary: #0255D2;
+  --color-primary-content: oklch(89.8329% 0.04099 260.545379);
+  --color-secondary: #51575E;
+  --color-secondary-content: oklch(89.0788% 0.002748 252.215444);
+  --color-accent: oklch(74% 0.238 322.16);
+  --color-accent-content: oklch(29% 0.136 325.661);
+  --color-neutral: oklch(13% 0.028 261.692);
+  --color-neutral-content: oklch(98% 0.002 247.839);
+  --color-info: #9CD4FF;
+  --color-info-content: oklch(16.9319% 0.016706 241.980278);
+  --color-success: #136941;
+  --color-success-content: oklch(89.2337% 0.020363 157.239622);
+  --color-warning: #FFC107;
+  --color-warning-content: oklch(16.8834% 0.034432 84.933789);
+  --color-error: #B82030;
+  --color-error-content: oklch(90.1657% 0.03706 22.308227);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* Add variants based on LiveView classes */
+@custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
+@custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
+@custom-variant phx-change-loading (.phx-change-loading&, .phx-change-loading &);
+
+/* Use the data attribute for dark mode  */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* Make LiveView wrapper divs transparent for layout */
+[data-phx-session], [data-phx-teleported-src] { display: contents }
+
+/* This file is for your main application CSS */

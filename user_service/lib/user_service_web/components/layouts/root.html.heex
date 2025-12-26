@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title default="Unnamed page" suffix=" | Ory Sandbox">
+      {assigns[:page_title]}
+    </.live_title>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
+    </script>
+  </head>
+  <body>
+    <div id="localhost-warning-container" phx-update="ignore" />
+    {@inner_content}
+  </body>
+  <script>
+    // Show a warning if using localhost instead of 127.0.0.1
+    const localhostWarningContainer = document.querySelector("#localhost-warning-container");
+
+    if (window.location.hostname === "localhost") {
+      alert("Use '127.0.0.1' in the URL, not 'localhost'.\n\nThe Ory service is configured to use '127.0.0.1'. This is a different origin than 'localhost', and authentication credentials cannot be shared between the two origins.")
+    }
+  </script>
+</html>
