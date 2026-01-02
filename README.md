@@ -61,19 +61,19 @@ You will need to run the script twice: Once to create credentials for the Elixir
 
 ```elixir
 # Sanity check: The unprotected URL route always works, even without a token
-iex> HelloOry.send_request_to_unprotected_endpoint()
+iex> OauthSandbox.send_request_to_unprotected_endpoint()
 {:ok, %Req.Response{status: 200, body: "Hello, world!\n"}}
 
 # Attempt to access the protected endpoint with an invalid token. (The request should return 401)
-iex> HelloOry.send_request_to_protected_endpoint("invalid-token")
+iex> OauthSandbox.send_request_to_protected_endpoint("invalid-token")
 {:ok, %Req.Response{status: 401, body: "401 Unauthorized\n"}}
 
 # Get a valid access token from the auth server
-iex> {:ok, token} = HelloOry.fetch_access_token_for_elixir_client()
+iex> {:ok, token} = OauthSandbox.fetch_access_token_for_elixir_client()
 {:ok, "ory_at_0000000000000000000000000000000000000000000.0000000000000000000000000000000000000000000"}
 
 # The protected endpoint can be accessed when using a valid token
-iex> HelloOry.send_request_to_protected_endpoint(token)
+iex> OauthSandbox.send_request_to_protected_endpoint(token)
 {:ok, %Req.Response{status: 200, body: "401 Unauthorized\n"}}
 ```
 
@@ -124,10 +124,10 @@ The Elixir HTTP server performs the following validations on the access token th
 
 ### Digging deeper
 
-For more information, see the module documentation for the `HelloOry` project in IEx:
+For more information, see the module documentation for the `OauthSandbox` project in IEx:
 
 ```elixir
-iex> h HelloOry
+iex> h OauthSandbox
 ```
 
 You may also check out the contents of the `oauth_sandbox` Elixir project to see how things work under the hood.
